@@ -1,0 +1,210 @@
+--------------------------application.properties
+server.port=2345
+spring.h2.console.enabled=true
+spring.datasource.url=jdbc:h2:mem:testdb
+
+--------------------------------Author model
+package com.example.dbproject.wiprocch2crud.model;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Author {
+
+	private String Name;
+	@Id
+	private int Aid;
+	private String Book;
+	public Author() {
+		// TODO Auto-generated constructor stub
+	}
+	public String getName() {
+		return Name;
+	}
+	public void setName(String name) {
+		Name = name;
+	}
+	public int getAid() {
+		return Aid;
+	}
+	public void setAid(int aid) {
+		Aid = aid;
+	}
+	public String getBook() {
+		return Book;
+	}
+	public void setBook(String book) {
+		Book = book;
+	}
+	@Override
+	public String toString() {
+		return "Author [Name=" + Name + ", Aid=" + Aid + ", Book=" + Book + "]";
+	}
+	public Author(String name, int aid, String book) {
+		super();
+		Name = name;
+		Aid = aid;
+		Book = book;
+	}
+	
+	
+}
+-----------------------------------------authordao
+package com.example.dbproject.wiprocch2crud.dao;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.example.dbproject.wiprocch2crud.model.Author;
+@Repository
+public interface Authordao extends CrudRepository<Author, Integer> {
+
+}
+-------------------------------------------authorservice
+package com.example.dbproject.wiprocch2crud.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.example.dbproject.wiprocch2crud.model.Author;
+
+@Service
+public interface AuthorService {
+  public Author SaveAuthor(Author author);
+  public List<Author> getallauthors();
+  public Author getauthor(int aid);
+  public String delauthor(int aid);
+  public Author updateauthor(Author author);
+}
+-------------------------------------------authorserviceimpl
+package com.example.dbproject.wiprocch2crud.servimpl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.dbproject.wiprocch2crud.dao.Authordao;
+import com.example.dbproject.wiprocch2crud.model.Author;
+import com.example.dbproject.wiprocch2crud.service.AuthorService;
+
+@Service
+public class AuthorServImpl implements AuthorService {
+	@Autowired
+    Authordao authordao;
+	
+	@Override
+	public Author SaveAuthor(Author author) {
+        
+		String nm=nameGenerator(author.getName());
+		author.setName(nm);
+			return authordao.save(author);
+	}
+
+private String nameGenerator(String name) {		
+	return name.toUpperCase();
+	}
+
+@Override
+public List<Author> getallauthors() {
+	return (List<Author>) authordao.findAll();
+}
+
+@Override
+public Author getauthor(int aid) {
+	
+	return authordao.findById(aid).get();
+}
+
+@Override
+public String delauthor(int aid) {
+	Author author=getauthor(aid);
+	if(author!=null) 
+	{
+		authordao.delete(author);
+		return "author  can be deleted";
+	}
+	else 
+	{
+	     return "author cannot be deleted";
+	}
+}
+
+@Override
+public Author updateauthor(Author author) {
+	
+	return authordao.save(author);
+}
+
+
+}
+-----------------------------------------------authorctrler
+package com.example.dbproject.wiprocch2crud.ctlr;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.dbproject.wiprocch2crud.model.Author;
+import com.example.dbproject.wiprocch2crud.service.AuthorService;
+
+@RestController
+@RequestMapping("authors")
+public class AuthorCtrlr {
+	@Autowired
+	AuthorService authorservice;
+	@PostMapping
+	public ResponseEntity<Author> SaveAuthor(@RequestBody Author author)
+	{
+		Author savedauthor=authorservice.SaveAuthor(author);
+		
+		return new ResponseEntity<Author> (savedauthor, HttpStatus.CREATED);
+		
+	}
+	@GetMapping
+	public ResponseEntity<List<Author>> getauthor()
+	{
+		List<Author> authors=authorservice.getallauthors();
+		
+		return new ResponseEntity<List<Author>> (authors, HttpStatus.FOUND);
+		
+	}
+	@GetMapping("{aid}")
+	public ResponseEntity<Author> getauthor(@PathVariable int aid)
+	{
+		Author author=authorservice.getauthor(aid);
+		
+		return new ResponseEntity<Author> (author, HttpStatus.FOUND);
+		
+	}
+	@DeleteMapping("{aid}")
+	public ResponseEntity<String> delauthor(@PathVariable int aid)
+	{
+		String result=authorservice.delauthor(aid);
+		
+		return new ResponseEntity<String> (result, HttpStatus.FOUND);
+		
+	}
+	@PutMapping
+	public ResponseEntity<Author> UpdateAuthor(@RequestBody Author author)
+	{
+		Author savedauthor=authorservice.updateauthor(author);
+		
+		return new ResponseEntity<Author> (savedauthor, HttpStatus.CREATED);
+		
+	}
+	
+
+}
