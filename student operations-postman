@@ -1,0 +1,152 @@
+package com.example.student.Ctrler;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.student.model.Student;
+@RequestMapping("students")
+@RestController
+public class StudentCtrler {
+//	@GetMapping
+//	public ResponseEntity<String> getmsg() {
+//		return new ResponseEntity<String>("get Mapping",HttpStatus.FOUND);
+//	}
+	ArrayList<Student> students=new ArrayList<>();
+	public StudentCtrler() {
+		// TODO Auto-generated constructor stub
+		students.add(new Student("mahi",22,'b',4,90));
+		students.add(new Student("mahi",20,'c',7,99));
+		students.add(new Student("mahalakshmi",21,'a',5,92));
+		students.add(new Student("mahi",19,'d',4,80));
+		students.add(new Student("lucky",18,'e',3,78));	
+	}
+	@GetMapping
+	public ResponseEntity<List<Student>> getstud() {
+		return new ResponseEntity<List<Student>>(students,HttpStatus.FOUND);
+	}
+	@GetMapping("/name/{sname}")
+	public ResponseEntity<List<Student>> getallstud(@PathVariable String sname)
+	{
+		ArrayList<Student> galls=new ArrayList<>();
+		for(Student s:students) {
+			if(s.getName().equals(sname)) {
+				galls.add(s);
+			}
+		}
+		int si=galls.size();
+    	if(si==0) 
+		{
+			galls.add(new Student("student not found",0,'_',0,0));
+			return new ResponseEntity<List<Student>>(galls, HttpStatus.OK);
+	    }
+		else
+		{
+		return new ResponseEntity<List<Student>>(galls, HttpStatus.OK);
+	    }		
+	    
+	}
+	
+	@PostMapping
+	public ResponseEntity<Student> poststud(@RequestBody Student stud) {
+		students.add(stud);
+		return new ResponseEntity<Student>(stud,HttpStatus.FOUND);
+	}
+	@DeleteMapping("/name/{studname}")
+	public ResponseEntity<List<Student>>delstud(@PathVariable String studname) {
+		ArrayList<Student> delstud=new ArrayList<>();
+		for(Student s:students)
+		{
+			if(s.getName().equals(studname))
+			{
+				
+				delstud.add(s);
+			}
+		}
+		for(Student ds:delstud) {
+			students.remove(ds);
+		}
+		int si=delstud.size();
+		if(si==0) {
+			delstud.add(new Student("student not found",0,'_',0,0));
+			return new ResponseEntity<List<Student>>(delstud,HttpStatus.OK);
+		}
+		else {
+		        return new ResponseEntity<List<Student>>(delstud,HttpStatus.OK);
+		}
+		
+		}
+	
+	@DeleteMapping("/sem/{semnum}")
+	public ResponseEntity<List<Student>> delstudsem(@PathVariable int semnum) {
+		ArrayList<Student> delstudsem=new ArrayList<>();
+		for(Student s:students)
+		{
+			if(s.getSem()==semnum)
+			{
+				delstudsem.add(s);
+			}
+		}
+			for(Student dss:delstudsem) {
+				students.remove(dss);
+			}
+			int si=delstudsem.size();
+			if(si==0) {
+		
+		return new ResponseEntity<List<Student>>(delstudsem,HttpStatus.OK);
+		}
+			else
+			{
+				delstudsem.add(new Student("student not found",0,'_',0,0));
+				return new ResponseEntity<List<Student>>(delstudsem,HttpStatus.OK);
+				
+			}
+	}
+	@GetMapping("/{marks}")
+	public ResponseEntity<List<Student>> getallstudgm(@PathVariable int marks)
+	{
+		ArrayList<Student> galls=new ArrayList<>();
+		for(Student s:students) {
+			if(s.getMarks()>=marks) {
+				galls.add(s);
+			}
+		}
+		int si=galls.size();
+    	if(si==0) 
+		{
+			galls.add(new Student("student not found",0,'_',0,0));
+			return new ResponseEntity<List<Student>>(galls, HttpStatus.OK);
+	    }
+		else
+		{
+		return new ResponseEntity<List<Student>>(galls, HttpStatus.OK);
+	    }		
+	    
+	}
+	
+	@PutMapping
+	public ResponseEntity<Student> updatestud(@RequestBody Student studname) {
+		Student upstud=new Student();
+		for(Student s:students)
+		{
+			if(s.getName().equals(studname.getName()))
+			{
+				students.remove(s);
+				students.add(studname);
+		        return new ResponseEntity<Student>(studname,HttpStatus.OK);
+			}
+		}
+		upstud.setName("student name not found");
+		return new ResponseEntity<Student>(upstud ,HttpStatus.OK);
+	}
+}
