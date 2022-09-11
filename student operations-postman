@@ -1,3 +1,76 @@
+-------------------------------Student
+package com.example.student.model;
+
+public class Student {
+private String Name;
+private int Age;
+private char Divide;
+private int Sem;
+private int Marks;
+
+public Student() {
+	// TODO Auto-generated constructor stub
+}
+
+public Student(String name, int age, char divide, int sem, int marks) {
+	super();
+	Name = name;
+	Age = age;
+	Divide = divide;
+	Sem = sem;
+	Marks = marks;
+}
+
+public String getName() {
+	return Name;
+}
+
+public void setName(String name) {
+	Name = name;
+}
+
+public int getAge() {
+	return Age;
+}
+
+public void setAge(int age) {
+	Age = age;
+}
+
+public char getDivide() {
+	return Divide;
+}
+
+public void setDivide(char divide) {
+	Divide = divide;
+}
+
+public int getSem() {
+	return Sem;
+}
+
+public void setSem(int sem) {
+	Sem = sem;
+}
+
+public int getMarks() {
+	return Marks;
+}
+
+public void setMarks(int marks) {
+	Marks = marks;
+}
+
+@Override
+public String toString() {
+	return "Student [Name=" + Name + ", Age=" + Age + ", Divide=" + Divide + ", Sem=" + Sem + ", Marks=" + Marks + "]";
+}
+
+
+}
+
+
+--------------------------------------StudentCtrlr
 package com.example.student.Ctrler;
 
 import java.util.ArrayList;
